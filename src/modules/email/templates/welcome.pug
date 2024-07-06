@@ -1,0 +1,25 @@
+extends baseEmail
+
+block content
+  table.break-word(width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation")
+    tr
+      td.pad
+        .text
+          p 
+            strong Hi #{firstName},
+            br
+            | Welcome to Xpense Gem, we're glad to have you here 🎉🙏
+            br
+            | Xpense Gem App can help you to easily tracking the tasks you have 
+  table(width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation")
+    tr
+      td
+        .alignment(align="center")
+          a.btn(href=`${url}` target="_blank") Get Started
+  table.break-word(width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation")
+    tr
+      td.pad
+        .text
+          p If you need any help please don't hesitate to contact us!
+            br
+            | - Xpense Gem Team
