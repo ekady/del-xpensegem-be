@@ -26,7 +26,7 @@ export const QueryPagination = () =>
       type: String,
     }),
     ApiQuery({
-      name: 'disabledPagination',
+      name: 'disablePagination',
       required: false,
       example: false,
       type: Boolean,
