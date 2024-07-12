@@ -7,6 +7,7 @@ import { HttpModule } from '@/common/http/http.module';
 import { LoggerModule } from '@/common/logger/logger.module';
 import { AccountModule } from '@/modules/account/account.module';
 import { AuthModule } from '@/modules/auth/auth.module';
+import { CategoriesModule } from '@/modules/categories/categories.module';
 import { EmailModule } from '@/modules/email/email.module';
 import { FileStreamModule } from '@/modules/file-stream/file-stream.module';
 import { UserModule } from '@/modules/user/user.module';
@@ -26,6 +27,7 @@ import { AppController } from './app.controller';
     AuthModule,
     FileStreamModule,
     AccountModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
 })
