@@ -13,6 +13,7 @@ import { FileStreamModule } from '@/modules/file-stream/file-stream.module';
 import { UserModule } from '@/modules/user/user.module';
 
 import { AppController } from './app.controller';
+import { TransactionsModule } from './modules/transactions/transactions.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AppController } from './app.controller';
     FileStreamModule,
     AccountModule,
     CategoriesModule,
+    TransactionsModule,
   ],
   controllers: [AppController],
 })
