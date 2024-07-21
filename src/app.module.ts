@@ -14,6 +14,7 @@ import { UserModule } from '@/modules/user/user.module';
 
 import { AppController } from './app.controller';
 import { TransactionsModule } from './modules/transactions/transactions.module';
+import { TransactionSummaryModule } from './modules/transaction-summary/transaction-summary.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
     AccountModule,
     CategoriesModule,
     TransactionsModule,
+    TransactionSummaryModule,
   ],
   controllers: [AppController],
 })
