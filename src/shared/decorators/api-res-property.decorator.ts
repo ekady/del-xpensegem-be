@@ -16,7 +16,7 @@ import { ResponseDto } from '../dto';
 export const ApiResProperty = <TModel extends Type<any>>(
   model: TModel | TModel[],
   statusCode: number,
-  { isDisableAuth = false, defaultStructure = true } = {},
+  { isDisableAuth = false, defaultStructure = true, isPagination = false } = {},
 ) => {
   const models = Array.isArray(model) ? model : [model];
   const data = Array.isArray(model)
@@ -31,6 +31,22 @@ export const ApiResProperty = <TModel extends Type<any>>(
         },
       }
     : {};
+  const finalProperties = isPagination
+    ? {
+        data,
+        pagination: {
+          default: {
+            limit: 10,
+            page: 1,
+            total: 10,
+            totalPages: 1,
+          },
+        },
+        statusCode: {
+          default: statusCode,
+        },
+      }
+    : properties;
   return applyDecorators(
     apiAuth,
     ApiExtraModels(ResponseDto, ...models),
@@ -39,7 +55,7 @@ export const ApiResProperty = <TModel extends Type<any>>(
         allOf: [
           { $ref: getSchemaPath(ResponseDto) },
           {
-            properties,
+            properties: finalProperties,
           },
         ],
       },

@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { JwtPayloadReq } from '@/modules/auth/decorators';
-import { TransactionEntity } from '@/modules/transactions/entities/transaction.entity';
+import { TransactionSummaryDto } from '@/modules/transaction-summary/dto/transaction-summary.dto';
 import { ApiResProperty } from '@/shared/decorators';
 import { IJwtPayload } from '@/shared/interfaces/jwt-payload.interface';
 
@@ -16,7 +16,7 @@ export class TransactionSummaryController {
   ) {}
 
   @Get()
-  @ApiResProperty(TransactionEntity, 200)
+  @ApiResProperty(TransactionSummaryDto, 200)
   @ApiQuery({ name: 'from', type: 'string', required: false })
   @ApiQuery({ name: 'to', type: 'string', required: false })
   @ApiQuery({ name: 'accountId', type: 'string', required: false })

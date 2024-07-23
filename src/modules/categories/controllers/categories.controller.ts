@@ -11,9 +11,10 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 
 import { JwtPayloadReq } from '@/modules/auth/decorators';
-import { CategoryEntity } from '@/modules/categories/entities/category.entity';
+import { CategoryDto } from '@/modules/categories/dto/category.dto';
 import { ApiResProperty } from '@/shared/decorators';
 import { QueryPagination } from '@/shared/decorators/query-pagination.decorator';
+import { BaseEntityDto, IdDto } from '@/shared/dto';
 import { IJwtPayload } from '@/shared/interfaces/jwt-payload.interface';
 import { IPaginationOptions } from '@/shared/interfaces/pagination.interface';
 
@@ -27,7 +28,7 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  @ApiResProperty(CategoryEntity, 201)
+  @ApiResProperty(BaseEntityDto, 201)
   create(
     @JwtPayloadReq() jwtPayload: IJwtPayload,
     @Body() createCategoryDto: CreateCategoryDto,
@@ -36,7 +37,7 @@ export class CategoriesController {
   }
 
   @Get()
-  @ApiResProperty(CategoryEntity, 200)
+  @ApiResProperty([CategoryDto], 200, { isPagination: true })
   @QueryPagination()
   findAll(
     @JwtPayloadReq() jwtPayload: IJwtPayload,
@@ -46,13 +47,13 @@ export class CategoriesController {
   }
 
   @Get(':id')
-  @ApiResProperty(CategoryEntity, 200)
+  @ApiResProperty(CategoryDto, 200)
   findOne(@JwtPayloadReq() jwtPayload: IJwtPayload, @Param('id') id: string) {
     return this.categoriesService.findOne(jwtPayload.id, id);
   }
 
   @Patch(':id')
-  @ApiResProperty(CategoryEntity, 200)
+  @ApiResProperty(BaseEntityDto, 200)
   update(
     @JwtPayloadReq() jwtPayload: IJwtPayload,
     @Param('id') id: string,
@@ -62,7 +63,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
-  @ApiResProperty(CategoryEntity, 200)
+  @ApiResProperty(IdDto, 200)
   remove(@JwtPayloadReq() jwtPayload: IJwtPayload, @Param('id') id: string) {
     return this.categoriesService.remove(jwtPayload.id, id);
   }

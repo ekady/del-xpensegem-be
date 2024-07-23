@@ -10,10 +10,11 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { AccountEntity } from '@/modules/account/entities/account.entity';
+import { AccountDto } from '@/modules/account/dto/account.dto';
 import { JwtPayloadReq } from '@/modules/auth/decorators';
 import { ApiResProperty } from '@/shared/decorators';
 import { QueryPagination } from '@/shared/decorators/query-pagination.decorator';
+import { BaseEntityDto, IdDto } from '@/shared/dto';
 import { IJwtPayload } from '@/shared/interfaces/jwt-payload.interface';
 import { IPaginationOptions } from '@/shared/interfaces/pagination.interface';
 
@@ -27,7 +28,7 @@ export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
   @Post()
-  @ApiResProperty(AccountEntity, 201)
+  @ApiResProperty(BaseEntityDto, 201)
   create(
     @JwtPayloadReq() jwtPayload: IJwtPayload,
     @Body() createAccountDto: CreateAccountDto,
@@ -36,7 +37,7 @@ export class AccountController {
   }
 
   @Get()
-  @ApiResProperty(AccountEntity, 200)
+  @ApiResProperty([AccountDto], 200, { isPagination: true })
   @QueryPagination()
   findAll(
     @JwtPayloadReq() jwtPayload: IJwtPayload,
@@ -46,13 +47,13 @@ export class AccountController {
   }
 
   @Get(':id')
-  @ApiResProperty(AccountEntity, 200)
+  @ApiResProperty(AccountDto, 200)
   findOne(@JwtPayloadReq() jwtPayload: IJwtPayload, @Param('id') id: string) {
     return this.accountService.findOne({ userId: jwtPayload.id, id });
   }
 
   @Patch(':id')
-  @ApiResProperty(AccountEntity, 200)
+  @ApiResProperty(BaseEntityDto, 200)
   update(
     @JwtPayloadReq() jwtPayload: IJwtPayload,
     @Param('id') id: string,
@@ -62,7 +63,7 @@ export class AccountController {
   }
 
   @Delete(':id')
-  @ApiResProperty(AccountEntity, 200)
+  @ApiResProperty(IdDto, 200)
   remove(@JwtPayloadReq() jwtPayload: IJwtPayload, @Param('id') id: string) {
     return this.accountService.remove({ userId: jwtPayload.id, id });
   }

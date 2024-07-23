@@ -11,9 +11,10 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 
 import { JwtPayloadReq } from '@/modules/auth/decorators';
-import { TransactionEntity } from '@/modules/transactions/entities/transaction.entity';
+import { TransactionDto } from '@/modules/transactions/dto/transaction.dto';
 import { ApiResProperty } from '@/shared/decorators';
 import { QueryPagination } from '@/shared/decorators/query-pagination.decorator';
+import { BaseEntityDto, IdDto } from '@/shared/dto';
 import { IJwtPayload } from '@/shared/interfaces/jwt-payload.interface';
 import { IPaginationOptions } from '@/shared/interfaces/pagination.interface';
 
@@ -27,7 +28,7 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Post()
-  @ApiResProperty(TransactionEntity, 201)
+  @ApiResProperty(BaseEntityDto, 201)
   create(
     @JwtPayloadReq() jwtPayload: IJwtPayload,
     @Body() createTransactionDto: CreateTransactionDto,
@@ -36,7 +37,7 @@ export class TransactionsController {
   }
 
   @Get()
-  @ApiResProperty(TransactionEntity, 200)
+  @ApiResProperty([TransactionDto], 200, { isPagination: true })
   @QueryPagination()
   findAll(
     @JwtPayloadReq() jwtPayload: IJwtPayload,
@@ -46,13 +47,13 @@ export class TransactionsController {
   }
 
   @Get(':id')
-  @ApiResProperty(TransactionEntity, 200)
+  @ApiResProperty(TransactionDto, 200)
   findOne(@JwtPayloadReq() jwtPayload: IJwtPayload, @Param('id') id: string) {
     return this.transactionsService.findOne(jwtPayload.id, id);
   }
 
   @Patch(':id')
-  @ApiResProperty(TransactionEntity, 200)
+  @ApiResProperty(BaseEntityDto, 200)
   update(
     @JwtPayloadReq() jwtPayload: IJwtPayload,
     @Param('id') id: string,
@@ -66,7 +67,7 @@ export class TransactionsController {
   }
 
   @Delete(':id')
-  @ApiResProperty(TransactionEntity, 200)
+  @ApiResProperty(IdDto, 200)
   remove(@JwtPayloadReq() jwtPayload: IJwtPayload, @Param('id') id: string) {
     return this.transactionsService.remove(jwtPayload.id, id);
   }
