@@ -162,12 +162,12 @@ export class TransactionSummaryService {
     const days = fillMissingDays(activeDays, startDate, endDate);
 
     return {
-      remainingAmount: currentPeriod.remaining,
-      remainingChange,
-      incomeAmount: currentPeriod.income,
-      incomeChange,
-      expensesAmount: currentPeriod.expenses,
-      expensesChange,
+      remainingAmount: +currentPeriod.remaining,
+      remainingChange: +remainingChange,
+      incomeAmount: +currentPeriod.income,
+      incomeChange: +incomeChange,
+      expensesAmount: +currentPeriod.expenses,
+      expensesChange: +expensesChange,
       categories: topCategories,
       days,
     };
