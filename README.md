@@ -59,7 +59,7 @@ src/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/del-xpensegem-be.git
+   git clone https://github.com/ekady/del-xpensegem-be.git
    cd del-xpensegem-be
    ```
 
@@ -70,8 +70,7 @@ src/
 
 3. Set up environment variables:
    ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
+   # Edit .env configuration
    ```
 
 4. Start the development server:
@@ -82,7 +81,7 @@ src/
 ### Docker Setup
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ## API Swagger
