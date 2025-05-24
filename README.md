@@ -59,7 +59,7 @@ src/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/del-xpensegem-be.git
+   git clone https://github.com/ekady/del-xpensegem-be.git
    cd del-xpensegem-be
    ```
 
