@@ -1,73 +1,126 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# XpenseGem Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A robust backend service for managing personal and business expenses, built with NestJS and TypeScript.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## About
 
-## Description
+XpenseGem Backend is an expense management system that provides a comprehensive API for tracking and categorizing financial transactions. Built with NestJS.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Features
 
-## Installation
+- 💰 **Transaction Management**
+  - Create, read, update, and delete transactions
+  - Categorize transactions
+  - Transaction summaries and analytics
 
-```bash
-$ pnpm install
+- 📈 **Transaction Summaries**
+  - Daily, weekly, monthly reports
+  - Custom date range reports
+
+## Tech Stack
+
+- **Framework:** NestJS
+- **Language:** TypeScript
+- **Database:** PostgreSQL
+- **ORM:** TypeORM
+- **Authentication:** JWT
+- **Containerization:** Docker
+- **Testing:** Jest
+- **Code Quality:** ESLint, Prettier, Husky
+
+## Project Structure
+
+```
+src/
+├── common/             # Common utilities and helpers
+├── config/             # Application configuration
+├── modules/            # Feature modules
+│   ├── account/        # Account management
+│   ├── auth/           # Authentication
+│   ├── categories/     # Transaction categories
+│   ├── email/          # Email notifications
+│   ├── file-stream/    # File handling
+│   ├── transactions/   # Transaction management
+│   ├── transaction-summary/ # Transaction reports
+│   └── user/           # User management
+├── shared/             # Shared resources
+└── main.ts             # Application entry point
 ```
 
-## Running the app
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v20 or higher)
+- PostgreSQL
+- Docker (optional)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ekady/del-xpensegem-be.git
+   cd del-xpensegem-be
+   ```
+
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+3. Set up environment variables:
+   ```bash
+   # Edit .env configuration
+   ```
+
+4. Start the development server:
+   ```bash
+   pnpm start:dev
+   ```
+
+### Docker Setup
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+docker compose up -d
 ```
 
-## Test
+## API Swagger
 
-```bash
-# unit tests
-$ pnpm run test
+API swagger is available at `/swagger` when running the server.
 
-# e2e tests
-$ pnpm run test:e2e
+## Contributing
 
-# test coverage
-$ pnpm run test:cov
-```
+We welcome contributions! Please follow these steps:
 
-## Support
+1. Fork the repository
+2. Create a feature branch:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. Commit your changes:
+   ```bash
+   git commit -m 'Add some feature'
+   ```
+4. Push to the branch:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+5. Open a Pull Request
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Development Guidelines
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- Follow the existing code style and structure
+- Update documentation as needed
+- Use conventional commits
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support, please open an issue in the GitHub repository or contact the maintainers.
+
+---
+
+Built with ❤️ using NestJS
