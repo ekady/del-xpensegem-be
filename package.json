@@ -21,7 +21,7 @@
     "migration:run": "pnpm typeorm migration:run -d ormconfig.ts",
     "migration:revert": "pnpm typeorm migration:revert -d ormconfig.ts",
     "migration:create": "pnpm typeorm migration:create -d ormconfig.ts",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.808.0",
