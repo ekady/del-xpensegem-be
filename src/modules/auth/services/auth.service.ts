@@ -21,6 +21,7 @@ import {
   SignInRequestDto,
   SignUpRequestDto,
   TokensDto,
+  UserDataDto,
 } from '../dto';
 
 @Injectable()
@@ -111,18 +112,24 @@ export class AuthService {
     });
   }
 
-  async signUp(signUpDto: SignUpRequestDto): Promise<StatusMessageDto> {
-    const user = await this.userRepository.findOne({
+  async signUp(signUpDto: SignUpRequestDto): Promise<UserDataDto> {
+    const userExists = await this.userRepository.findOne({
       where: { email: signUpDto.email },
     });
-    if (user) throw new EmailUsernameExistException();
+    if (userExists) throw new EmailUsernameExistException();
 
-    await this.userRepository.insert({
-      ...signUpDto,
-      isViaProvider: false,
+    const user: UserDataDto = {
+      firstName: signUpDto.firstName,
+      lastName: signUpDto.lastName,
+      email: signUpDto.email,
       picture: `${this.config.get('GRAVATAR_URL')}/${HashHelper.hashCrypto(
         signUpDto.email,
       )}?s=300&d=identicon`,
+    };
+
+    const userCreated = await this.userRepository.insert({
+      ...signUpDto,
+      ...user,
     });
     await this.emailService.sendMail({
       to: signUpDto.email,
@@ -132,7 +139,10 @@ export class AuthService {
       url: this.config.get('URL_CLIENT'),
     });
 
-    return { message: 'Success' };
+    return {
+      id: userCreated?.identifiers[0]?.id,
+      ...user,
+    };
   }
 
   async signOut(userId: string): Promise<StatusMessageDto> {

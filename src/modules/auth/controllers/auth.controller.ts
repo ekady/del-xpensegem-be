@@ -22,6 +22,7 @@ import {
   SignInRequestDto,
   SignUpRequestDto,
   TokensDto,
+  UserDataDto,
 } from '../dto';
 import { AuthJwtRefreshGuard } from '../guard';
 import { AuthService } from '../services/auth.service';
@@ -53,9 +54,9 @@ export class AuthController {
 
   @Post('sign-up')
   @Throttle({ default: { limit: 5, ttl: 3600000 } })
-  @ApiResProperty(StatusMessageDto, 201, { isDisableAuth: true })
+  @ApiResProperty(UserDataDto, 201, { isDisableAuth: true })
   @SkipAuth()
-  async signUp(@Body() signUpDto: SignUpRequestDto): Promise<StatusMessageDto> {
+  async signUp(@Body() signUpDto: SignUpRequestDto): Promise<UserDataDto> {
     return this.authService.signUp(signUpDto);
   }
 
