@@ -30,7 +30,7 @@ export class TokenService {
 
   async generateAuthTokens(
     payload: Pick<IJwtPayload, 'id' | 'email'>,
-  ): Promise<TokensDto> {
+  ): Promise<Omit<TokensDto, 'user'>> {
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: this.config.get('JWT_EXPIRES_IN'),
       secret: this.config.get('JWT_SECRET'),

@@ -55,7 +55,16 @@ export class AuthService {
       email: user.email,
     });
 
-    return tokens;
+    return {
+      ...tokens,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        picture: user.picture,
+      },
+    };
   }
 
   async continueWithProvider(
@@ -106,10 +115,21 @@ export class AuthService {
       });
     }
 
-    return this.tokenService.generateAuthTokens({
+    const tokens = await this.tokenService.generateAuthTokens({
       id: user.id,
       email: user.email,
     });
+
+    return {
+      ...tokens,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        picture: user.picture,
+      },
+    };
   }
 
   async signUp(signUpDto: SignUpRequestDto): Promise<UserDataDto> {
@@ -178,10 +198,21 @@ export class AuthService {
       throw new TokenInvalidException();
     }
 
-    return this.tokenService.generateAuthTokens({
+    const tokens = await this.tokenService.generateAuthTokens({
       id: userId,
       email: user.email,
     });
+
+    return {
+      ...tokens,
+      user: {
+        id: userId,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        picture: user.picture,
+      },
+    };
   }
 
   async forgotPassword({
