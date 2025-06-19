@@ -23,14 +23,21 @@ import {
   SignUpRequestDto,
   TokensDto,
   UserDataDto,
+  ValidateOtpDto,
+  ValidateOtpResponseDto,
 } from '../dto';
 import { AuthJwtRefreshGuard } from '../guard';
 import { AuthService } from '../services/auth.service';
+import { OtpService } from '../services/otp.service';
+import { EStatusMessage } from '@/shared/enums/status-message.enum';
 
 @Controller('authentication')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private readonly otpService: OtpService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post('sign-in')
   @Throttle({ default: { limit: 5, ttl: 3600000 } })
@@ -84,8 +91,35 @@ export class AuthController {
   @ApiResProperty(StatusMessageDto, 200, { isDisableAuth: true })
   @SkipAuth()
   @HttpCode(200)
-  forgotPassword(@Body() body: ForgotPasswordDto): Promise<StatusMessageDto> {
-    return this.authService.forgotPassword(body);
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<StatusMessageDto> {
+    await this.otpService.generateOtp(forgotPasswordDto.email);
+    return { message: 'An OTP has been sent to your email.' };
+  }
+
+  @Post('validate-otp')
+  @ApiResProperty(ValidateOtpResponseDto, 200, { isDisableAuth: true })
+  @SkipAuth()
+  @HttpCode(200)
+  async validateOtp(@Body() validateOtpDto: ValidateOtpDto): Promise<ValidateOtpResponseDto | StatusMessageDto> {
+    const resetToken = await this.otpService.validateOtpAndCreateSession(validateOtpDto.email, validateOtpDto.otp);
+    if (!resetToken) {
+      return { message: EStatusMessage.Failed };
+    }
+    return { resetToken };
+  }
+
+  @Post('reset-password')
+  @Throttle({ default: { limit: 5, ttl: 3600000 } })
+  @ApiResProperty(StatusMessageDto, 200, { isDisableAuth: true })
+  @SkipAuth()
+  @HttpCode(200)
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<StatusMessageDto> {
+    const isValid = await this.otpService.validateResetSessionToken(resetPasswordDto.email, resetPasswordDto.resetToken);
+    if (!isValid) {
+      return { message: EStatusMessage.Failed };
+    }
+    await this.authService.resetPasswordWithOtp(resetPasswordDto.email, resetPasswordDto.newPassword);
+    return { message: EStatusMessage.Success };
   }
 
   @Get('verify-reset-token')
@@ -97,17 +131,5 @@ export class AuthController {
     @Query('token') token: string,
   ): Promise<StatusMessageDto> {
     return this.authService.verifyTokenResetPassword(token);
-  }
-
-  @Post('reset-password')
-  @Throttle({ default: { limit: 5, ttl: 3600000 } })
-  @ApiResProperty(StatusMessageDto, 200, { isDisableAuth: true })
-  @SkipAuth()
-  @HttpCode(200)
-  resetPassword(
-    @Query('reset-token') token: string,
-    @Body() body: ResetPasswordDto,
-  ): Promise<StatusMessageDto> {
-    return this.authService.resetPassword(token, body);
   }
 }

@@ -5,3 +5,4 @@ export * from './tokens.dto';
 export * from './forgot-password-request.dto';
 export * from './reset-password.dto';
 export * from './user-data.dto';
+export * from './validate-otp.dto';

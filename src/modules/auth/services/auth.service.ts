@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios, { AxiosResponse } from 'axios';
@@ -17,7 +17,6 @@ import { TokenService } from './token.service';
 import {
   ContinueProviderRequestDto,
   ForgotPasswordDto,
-  ResetPasswordDto,
   SignInRequestDto,
   SignUpRequestDto,
   TokensDto,
@@ -39,7 +38,14 @@ export class AuthService {
   async signIn(signInDto: SignInRequestDto): Promise<TokensDto> {
     const user = await this.userRepository.findOne({
       where: { email: signInDto.email },
-      select: { password: true, email: true, picture: true, id: true },
+      select: {
+        password: true,
+        email: true,
+        picture: true,
+        id: true,
+        firstName: true,
+        lastName: true,
+      },
     });
 
     const userHashedPassword = user ? user.password : '';
@@ -248,18 +254,37 @@ export class AuthService {
     return { message: 'Success' };
   }
 
-  async resetPassword(
-    token: string,
-    resetPasswordDto: ResetPasswordDto,
-  ): Promise<StatusMessageDto> {
-    const user = await this.tokenService.verifyResetPasswordToken(token);
-    if (!user) throw new TokenInvalidException();
-
+  async resetPassword(email: string, newPassword: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { email: email },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
     await this.userRepository.update(
       { id: user.id },
       {
-        password: resetPasswordDto.password,
-        passwordConfirm: resetPasswordDto.passwordConfirm,
+        password: newPassword,
+        passwordConfirm: newPassword,
+        passwordResetToken: null,
+        passwordResetExpires: null,
+        hashedRefreshToken: null,
+      },
+    );
+  }
+
+  async resetPasswordWithOtp(email: string, newPassword: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { email: email },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.userRepository.update(
+      { id: user.id },
+      {
+        password: newPassword,
+        passwordConfirm: newPassword,
         passwordResetToken: null,
         passwordResetExpires: null,
         hashedRefreshToken: null,
@@ -273,7 +298,5 @@ export class AuthService {
       templateName: 'success-reset-password',
       name: user.firstName,
     });
-
-    return { message: 'Success' };
   }
 }

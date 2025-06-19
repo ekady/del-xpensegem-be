@@ -1,6 +1,7 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
+import { EStatusMessage } from '../enums/status-message.enum';
 
 export class StatusMessageDto {
   @ApiResponseProperty()
-  message: 'Success' | 'Failed';
+  message: EStatusMessage | string;
 }

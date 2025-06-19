@@ -8,7 +8,7 @@ import { UserService } from '@/modules/user/services/user.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity]), AwsModule],
-  exports: [TypeOrmModule],
+  exports: [UserService, TypeOrmModule],
   providers: [UserService],
   controllers: [UserController],
 })
