@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -100,11 +101,8 @@ export class AuthController {
   @ApiResProperty(ValidateOtpResponseDto, 200, { isDisableAuth: true })
   @SkipAuth()
   @HttpCode(200)
-  async validateOtp(@Body() validateOtpDto: ValidateOtpDto): Promise<ValidateOtpResponseDto | StatusMessageDto> {
+  async validateOtp(@Body() validateOtpDto: ValidateOtpDto): Promise<ValidateOtpResponseDto> {
     const resetToken = await this.otpService.validateOtpAndCreateSession(validateOtpDto.email, validateOtpDto.otp);
-    if (!resetToken) {
-      return { message: EStatusMessage.Failed };
-    }
     return { resetToken };
   }
 
@@ -116,7 +114,7 @@ export class AuthController {
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<StatusMessageDto> {
     const isValid = await this.otpService.validateResetSessionToken(resetPasswordDto.email, resetPasswordDto.resetToken);
     if (!isValid) {
-      return { message: EStatusMessage.Failed };
+      throw new BadRequestException('Invalid OTP, please request a new OTP');
     }
     await this.authService.resetPasswordWithOtp(resetPasswordDto.email, resetPasswordDto.newPassword);
     return { message: EStatusMessage.Success };

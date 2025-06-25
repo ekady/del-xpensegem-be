@@ -6,7 +6,6 @@ import { PasswordResetSessionEntity } from '../entities/password-reset-session.e
 import { randomBytes } from 'crypto';
 import { EmailService } from '@/modules/email/services/email.service';
 import { UserService } from '@/modules/user/services/user.service';
-import { LoggerService } from '@/common/logger/services/logger.service';
 
 @Injectable()
 export class OtpService {
@@ -17,12 +16,11 @@ export class OtpService {
     private sessionRepository: Repository<PasswordResetSessionEntity>,
     private emailService: EmailService,
     private userService: UserService,
-    private logger: LoggerService,
   ) {}
 
   async generateOtp(email: string, requestId?: string): Promise<void> {
     try {
-      const otp = randomBytes(3).toString('hex').toUpperCase();
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const expiresAt = new Date();
       expiresAt.setMinutes(expiresAt.getMinutes() + 10); // 10 minutes expiry
 
@@ -45,13 +43,13 @@ export class OtpService {
         is_expired: false,
       });
 
-      this.emailService.sendMail({
-        to: email,
-        subject: 'Reset Password - OTP',
-        templateName: 'reset-password',
-        name: user?.firstName || '',
-        otp,
-      });
+      // this.emailService.sendMail({
+      //   to: email,
+      //   subject: 'Reset Password - OTP',
+      //   templateName: 'reset-password',
+      //   name: user?.firstName || '',
+      //   otp,
+      // });
     } catch {
       throw new BadRequestException('Failed to generate OTP, make sure the email is correct');
     }
@@ -65,7 +63,7 @@ export class OtpService {
     });
 
     if (!otpRecord || otpRecord.is_expired || otpRecord.otp !== otp || otpRecord.expires_at < new Date()) {
-      return null;
+      throw new BadRequestException('Invalid OTP, please request a new OTP');
     }
 
     otpRecord.used = true;
