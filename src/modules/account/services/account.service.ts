@@ -21,11 +21,14 @@ export class AccountService {
   ) {}
 
   async create(userId: string, createAccountDto: CreateAccountDto) {
-    const { raw } = await this.accountRepository.insert({
+    const { identifiers } = await this.accountRepository.insert({
       ...createAccountDto,
       user: { id: userId },
     });
-    return raw;
+    const account = await this.accountRepository.findOneByOrFail({
+      id: identifiers[0].id,
+    });
+    return account;
   }
 
   async findAll(
@@ -35,7 +38,7 @@ export class AccountService {
     const isDisablePagination = disablePagination === 'true';
     const take = isDisablePagination
       ? undefined
-      : Number(limit) ?? PAGINATION_LIMIT;
+      : (Number(limit) ?? PAGINATION_LIMIT);
     const [column, order] = sort?.split('|') ?? [];
     const skip = (+page - 1 >= 0 ? +page - 1 : 0) * Number(limit);
 
@@ -66,26 +69,22 @@ export class AccountService {
   }
 
   async findOne({ userId, id }: { userId: string; id: string }) {
-    try {
-      const account = await this.accountRepository.findOneByOrFail({
-        id,
-        user: { id: userId },
-      });
-      return account;
-    } catch (error) {
-      throw new DocumentNotFoundException('Account not found');
-    }
+    const account = await this.accountRepository.findOneByOrFail({
+      id,
+      user: { id: userId },
+    });
+    return account;
   }
 
   async update(userId: string, id: string, updateAccountDto: UpdateAccountDto) {
-    const { affected } = await this.accountRepository.update(
+    const { affected, raw } = await this.accountRepository.update(
       { id, user: { id: userId } },
       updateAccountDto,
     );
     if (affected === 0) {
       throw new DocumentNotFoundException('Account not found');
     }
-    return { id };
+    return raw?.[0];
   }
 
   async remove({ userId, id }: { userId: string; id: string }) {
