@@ -13,6 +13,9 @@ export class CategoryDto extends BaseEntityDto {
   @ApiProperty()
   icon: string;
 
+  @ApiProperty()
+  color: string;
+
   @ApiProperty({ type: UserDto })
   user: UserDto;
 }
