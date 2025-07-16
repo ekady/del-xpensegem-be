@@ -23,13 +23,16 @@ export class TransactionsService {
     userId: string,
     { accountId, categoryId, ...payload }: CreateTransactionDto,
   ) {
-    const { raw } = await this.transactionRepository.insert({
+    const { identifiers } = await this.transactionRepository.insert({
       user: { id: userId },
       account: { id: accountId },
       category: { id: categoryId },
       ...payload,
     });
-    return raw;
+    const transaction = await this.transactionRepository.findOneByOrFail({
+      id: identifiers?.[0]?.id,
+    });
+    return transaction;
   }
 
   async findAll(

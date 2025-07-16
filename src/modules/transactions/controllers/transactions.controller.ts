@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
   Query,
@@ -52,7 +52,7 @@ export class TransactionsController {
     return this.transactionsService.findOne(jwtPayload.id, id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @ApiResProperty(BaseEntityDto, 200)
   update(
     @JwtPayloadReq() jwtPayload: IJwtPayload,
