@@ -16,7 +16,7 @@ import { ApiResProperty } from '@/shared/decorators';
 import { QueryPagination } from '@/shared/decorators/query-pagination.decorator';
 import { BaseEntityDto, IdDto } from '@/shared/dto';
 import { IJwtPayload } from '@/shared/interfaces/jwt-payload.interface';
-import { IPaginationOptions } from '@/shared/interfaces/pagination.interface';
+import { TransactionFiltersDto } from '../dto/transaction-filters.dto';
 
 import { CreateTransactionDto } from '../dto/create-transaction.dto';
 import { UpdateTransactionDto } from '../dto/update-transaction.dto';
@@ -41,7 +41,7 @@ export class TransactionsController {
   @QueryPagination()
   findAll(
     @JwtPayloadReq() jwtPayload: IJwtPayload,
-    @Query() queries: IPaginationOptions,
+    @Query() queries: TransactionFiltersDto,
   ) {
     return this.transactionsService.findAll(jwtPayload.id, queries);
   }

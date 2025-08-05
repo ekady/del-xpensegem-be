@@ -1,17 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import {
+  ILike,
+  Repository,
+  MoreThanOrEqual,
+  LessThanOrEqual,
+  Between,
+} from 'typeorm';
 
 import { TransactionEntity } from '@/modules/transactions/entities/transaction.entity';
 import { PAGINATION_LIMIT } from '@/shared/constants/pagination.constant';
 import { DocumentNotFoundException } from '@/shared/http-exceptions/exceptions/document-not-found.exception';
-import {
-  IPaginationOptions,
-  IPaginationResponse,
-} from '@/shared/interfaces/pagination.interface';
+import { IPaginationResponse } from '@/shared/interfaces/pagination.interface';
 
 import { CreateTransactionDto } from '../dto/create-transaction.dto';
 import { UpdateTransactionDto } from '../dto/update-transaction.dto';
+import { TransactionFiltersDto } from '../dto/transaction-filters.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -43,19 +47,59 @@ export class TransactionsService {
       disablePagination,
       search,
       sort,
-    }: IPaginationOptions,
+      categoryId,
+      accountId,
+      startDate,
+      endDate,
+      amountType,
+    }: TransactionFiltersDto,
   ): Promise<IPaginationResponse<TransactionEntity[]>> {
     const isDisablePagination = disablePagination === 'true';
     const take = isDisablePagination ? undefined : Number(limit);
     const [column, order] = sort?.split('|') ?? [];
     const skip = (+page - 1 >= 0 ? +page - 1 : 0) * Number(limit);
 
+    // Build where conditions
+    const whereConditions: any = {
+      user: { id: userId },
+    };
+
+    // Add search filter
+    if (search) {
+      whereConditions.payee = ILike(`%${search}%`);
+    }
+
+    // Add category filter
+    if (categoryId) {
+      whereConditions.category = { id: categoryId };
+    }
+
+    // Add account filter
+    if (accountId) {
+      whereConditions.account = { id: accountId };
+    }
+
+    // Add date range filters
+    if (startDate && endDate) {
+      whereConditions.date = Between(startDate, endDate);
+    } else if (startDate) {
+      whereConditions.date = MoreThanOrEqual(startDate);
+    } else if (endDate) {
+      whereConditions.date = LessThanOrEqual(endDate);
+    }
+
+    // Add amount type filter
+    if (amountType !== undefined) {
+      if (amountType === '1') {
+        whereConditions.amount = MoreThanOrEqual(0);
+      } else if (amountType === '-1') {
+        whereConditions.amount = LessThanOrEqual(0);
+      }
+    }
+
     const [transactions, count] = await this.transactionRepository.findAndCount(
       {
-        where: {
-          user: { id: userId },
-          ...(search ? { name: ILike(`%${search}%`) } : {}),
-        },
+        where: whereConditions,
         take,
         order: column && order ? { [column]: order } : {},
         skip: isDisablePagination ? 0 : skip,
@@ -83,18 +127,14 @@ export class TransactionsService {
   }
 
   async findOne(userId: string, id: string) {
-    try {
-      const transaction = await this.transactionRepository.findOneOrFail({
-        where: { id, user: { id: userId } },
-        relations: {
-          account: true,
-          category: true,
-        },
-      });
-      return transaction;
-    } catch (error) {
-      throw new DocumentNotFoundException('Transaction not found');
-    }
+    const transaction = await this.transactionRepository.findOneOrFail({
+      where: { id, user: { id: userId } },
+      relations: {
+        account: true,
+        category: true,
+      },
+    });
+    return transaction;
   }
 
   async update(
@@ -112,7 +152,11 @@ export class TransactionsService {
     );
     if (affected === 0)
       throw new DocumentNotFoundException('Transaction not found');
-    return { id };
+
+    const transaction = await this.transactionRepository.findOneByOrFail({
+      id,
+    });
+    return transaction;
   }
 
   async remove(userId: string, id: string) {
