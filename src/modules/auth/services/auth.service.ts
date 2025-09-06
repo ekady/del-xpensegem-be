@@ -83,7 +83,7 @@ export class AuthService {
     if (!userJwt?.email || !userJwt.given_name)
       throw new TokenInvalidException();
 
-    const user = await this.userRepository.findOne({
+    let user = await this.userRepository.findOne({
       where: { email: userJwt.email },
     });
 
@@ -105,7 +105,7 @@ export class AuthService {
         },
         { path: '/private/profile' },
       );
-      await this.userRepository.insert({
+      const insertResult = await this.userRepository.insert({
         email: userJwt.email,
         firstName: userJwt.given_name,
         lastName: userJwt.family_name,
@@ -119,6 +119,11 @@ export class AuthService {
         name: userJwt.given_name,
         url: this.config.get('URL_CLIENT'),
       });
+      // Re-assign user to the newly created user for token generation
+      user = {
+        id: insertResult.raw[0].id,
+        email: userJwt.email,
+      } as UserEntity;
     }
 
     const tokens = await this.tokenService.generateAuthTokens({
