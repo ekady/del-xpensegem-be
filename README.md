@@ -9,6 +9,7 @@ XpenseGem Backend is an expense management system that provides a comprehensive 
 ## Features
 
 - 💰 **Transaction Management**
+
   - Create, read, update, and delete transactions
   - Categorize transactions
   - Transaction summaries and analytics
@@ -47,6 +48,10 @@ src/
 └── main.ts             # Application entry point
 ```
 
+## Documentation
+
+- [Architecture](ARCHITECTURE.md) — System design, module structure, and request flow
+
 ## Getting Started
 
 ### Prerequisites
@@ -58,17 +63,20 @@ src/
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/ekady/del-xpensegem-be.git
    cd del-xpensegem-be
    ```
 
 2. Install dependencies:
+
    ```bash
    pnpm install
    ```
 
 3. Set up environment variables:
+
    ```bash
    # Edit .env configuration
    ```
