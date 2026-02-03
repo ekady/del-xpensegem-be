@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
-import { LoggerService } from './logger.service';
+import { LoggerService } from '@/common/logger/services/logger.service';
 import { ILoggerLog } from '@/common/logger/interfaces/logger.interface';
 
 describe('LoggerService', () => {

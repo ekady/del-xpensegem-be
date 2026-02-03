@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StreamableFile } from '@nestjs/common';
 
-import { FileStreamController } from './file-stream.controller';
-import { FileStreamService } from '../services/file-stream.service';
+import { FileStreamController } from '@/modules/file-stream/controllers/file-stream.controller';
+import { FileStreamService } from '@/modules/file-stream/services/file-stream.service';
 
 describe('FileStreamController', () => {
   let controller: FileStreamController;

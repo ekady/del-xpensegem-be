@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { AuthController } from './auth.controller';
-import { AuthService } from '../services/auth.service';
+import { AuthController } from '@/modules/auth/controllers/auth.controller';
+import { AuthService } from '@/modules/auth/services/auth.service';
 import { IJwtPayload } from '@/shared/interfaces/jwt-payload.interface';
 import { TokenInvalidException } from '@/shared/http-exceptions/exceptions/token-invalid.exception';
 

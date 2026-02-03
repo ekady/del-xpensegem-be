@@ -1,14 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
-import { CategoriesController } from './categories.controller';
-import { CategoriesService } from '../services/categories.service';
+import { AccountController } from '@/modules/account/controllers/account.controller';
+import { AccountService } from '@/modules/account/services/account.service';
 import { IJwtPayload } from '@/shared/interfaces/jwt-payload.interface';
 
-describe('CategoriesController', () => {
-  let controller: CategoriesController;
-  let service: CategoriesService;
+describe('AccountController', () => {
+  let controller: AccountController;
+  let service: AccountService;
 
-  const mockCategoriesService = {
+  const mockAccountService = {
     create: jest.fn(),
     findAll: jest.fn(),
     findOne: jest.fn(),
@@ -18,17 +17,17 @@ describe('CategoriesController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [CategoriesController],
+      controllers: [AccountController],
       providers: [
         {
-          provide: CategoriesService,
-          useValue: mockCategoriesService,
+          provide: AccountService,
+          useValue: mockAccountService,
         },
       ],
     }).compile();
 
-    controller = module.get<CategoriesController>(CategoriesController);
-    service = module.get<CategoriesService>(CategoriesService);
+    controller = module.get<AccountController>(AccountController);
+    service = module.get<AccountService>(AccountService);
   });
 
   afterEach(() => {
@@ -47,15 +46,15 @@ describe('CategoriesController', () => {
   };
 
   describe('create', () => {
-    it('should create a category', async () => {
+    it('should create an account', async () => {
       const createDto = {
-        name: 'Food',
-        description: 'Food expenses',
-        icon: 'food-icon',
+        name: 'Cash',
+        description: 'Cash account',
+        icon: 'cash-icon',
       };
-      const mockResult = { id: 'cat-1' };
+      const mockResult = { id: 'acc-1' };
 
-      mockCategoriesService.create.mockResolvedValue(mockResult);
+      mockAccountService.create.mockResolvedValue(mockResult);
 
       const result = await controller.create(mockJwtPayload, createDto);
 
@@ -65,13 +64,13 @@ describe('CategoriesController', () => {
   });
 
   describe('findAll', () => {
-    it('should return paginated categories', async () => {
+    it('should return paginated accounts', async () => {
       const mockResult = {
-        data: [{ id: 'cat-1', name: 'Food' }],
+        data: [{ id: 'acc-1', name: 'Cash' }],
         pagination: { limit: 10, page: 1, total: 1, totalPages: 1 },
       };
 
-      mockCategoriesService.findAll.mockResolvedValue(mockResult);
+      mockAccountService.findAll.mockResolvedValue(mockResult);
 
       const result = await controller.findAll(mockJwtPayload, {
         limit: 10,
@@ -87,26 +86,29 @@ describe('CategoriesController', () => {
   });
 
   describe('findOne', () => {
-    it('should return a single category', async () => {
-      const id = 'cat-1';
-      const mockCategory = { id, name: 'Food', description: 'Food expenses' };
+    it('should return a single account', async () => {
+      const id = 'acc-1';
+      const mockAccount = { id, name: 'Cash', description: 'Cash account' };
 
-      mockCategoriesService.findOne.mockResolvedValue(mockCategory);
+      mockAccountService.findOne.mockResolvedValue(mockAccount);
 
       const result = await controller.findOne(mockJwtPayload, id);
 
-      expect(service.findOne).toHaveBeenCalledWith(mockJwtPayload.id, id);
-      expect(result).toEqual(mockCategory);
+      expect(service.findOne).toHaveBeenCalledWith({
+        userId: mockJwtPayload.id,
+        id,
+      });
+      expect(result).toEqual(mockAccount);
     });
   });
 
   describe('update', () => {
-    it('should update a category', async () => {
-      const id = 'cat-1';
-      const updateDto = { name: 'Updated Food' };
+    it('should update an account', async () => {
+      const id = 'acc-1';
+      const updateDto = { name: 'Updated Cash' };
       const mockResult = { id };
 
-      mockCategoriesService.update.mockResolvedValue(mockResult);
+      mockAccountService.update.mockResolvedValue(mockResult);
 
       const result = await controller.update(mockJwtPayload, id, updateDto);
 
@@ -120,15 +122,18 @@ describe('CategoriesController', () => {
   });
 
   describe('remove', () => {
-    it('should remove a category', async () => {
-      const id = 'cat-1';
+    it('should remove an account', async () => {
+      const id = 'acc-1';
       const mockResult = { id };
 
-      mockCategoriesService.remove.mockResolvedValue(mockResult);
+      mockAccountService.remove.mockResolvedValue(mockResult);
 
       const result = await controller.remove(mockJwtPayload, id);
 
-      expect(service.remove).toHaveBeenCalledWith(mockJwtPayload.id, id);
+      expect(service.remove).toHaveBeenCalledWith({
+        userId: mockJwtPayload.id,
+        id,
+      });
       expect(result).toEqual(mockResult);
     });
   });

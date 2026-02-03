@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StreamableFile } from '@nestjs/common';
 
-import { FileStreamService } from './file-stream.service';
+import { FileStreamService } from '@/modules/file-stream/services/file-stream.service';
 import { AwsS3Service } from '@/common/aws/services/aws.s3.service';
 
 describe('FileStreamService', () => {

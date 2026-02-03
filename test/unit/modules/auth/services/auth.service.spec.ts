@@ -12,15 +12,15 @@ import { CredentialInvalidException } from '@/shared/http-exceptions/exceptions/
 import { EmailUsernameExistException } from '@/shared/http-exceptions/exceptions/email-username-exist.exception';
 import { TokenInvalidException } from '@/shared/http-exceptions/exceptions/token-invalid.exception';
 
-import { AuthService } from './services/auth.service';
-import { TokenService } from './services/token.service';
+import { AuthService } from '@/modules/auth/services/auth.service';
+import { TokenService } from '@/modules/auth/services/token.service';
 import {
   SignInRequestDto,
   SignUpRequestDto,
   ForgotPasswordDto,
   ResetPasswordDto,
   ContinueProviderRequestDto,
-} from './dto';
+} from '@/modules/auth/dto';
 
 jest.mock('axios');
 

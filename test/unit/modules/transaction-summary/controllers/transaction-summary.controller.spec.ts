@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { TransactionSummaryController } from '../controllers/transaction-summary.controller';
-import { TransactionSummaryService } from '../services/transaction-summary.service';
+import { TransactionSummaryController } from '@/modules/transaction-summary/controllers/transaction-summary.controller';
+import { TransactionSummaryService } from '@/modules/transaction-summary/services/transaction-summary.service';
 import { IJwtPayload } from '@/shared/interfaces/jwt-payload.interface';
 
 describe('TransactionSummaryController', () => {

@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { TransactionEntity } from '@/modules/transactions/entities/transaction.entity';
 
-import { TransactionSummaryService } from './transaction-summary.service';
+import { TransactionSummaryService } from '@/modules/transaction-summary/services/transaction-summary.service';
 
 describe('TransactionSummaryService', () => {
   let service: TransactionSummaryService;

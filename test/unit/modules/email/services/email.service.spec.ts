@@ -14,7 +14,7 @@ jest.mock('pug', () => ({
   renderFile: jest.fn(() => '<html>email</html>'),
 }));
 
-import { EmailService } from './email.service';
+import { EmailService } from '@/modules/email/services/email.service';
 
 const nodemailer = require('nodemailer');
 
