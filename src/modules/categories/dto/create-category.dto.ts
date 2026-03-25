@@ -16,4 +16,9 @@ export class CreateCategoryDto {
   @IsString()
   @IsOptional()
   icon: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  color: string;
 }

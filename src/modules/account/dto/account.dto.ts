@@ -17,6 +17,10 @@ export class AccountDto extends BaseEntityDto {
   @IsString()
   icon: string;
 
+  @ApiProperty()
+  @IsString()
+  color: string;
+
   @ApiProperty({ type: UserDto })
   user: UserDto;
 }

@@ -12,7 +12,7 @@ COPY --chown=node:node . .
 FROM base AS build
 USER node
 ENV NODE_ENV=production
-RUN pnpm build
+RUN pnpm build && pnpm prune --prod
 
 FROM node:20.19.1-alpine AS production
 USER node

@@ -14,6 +14,9 @@ export class AccountEntity extends AbstractEntity {
   @Column({ type: 'varchar', nullable: true })
   icon: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  color: string;
+
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE', nullable: false })
   user: UserEntity;
 }

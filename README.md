@@ -80,9 +80,29 @@ src/
 
 ### Docker Setup
 
+For production:
 ```bash
 docker compose up -d
 ```
+
+For development:
+```bash
+# Start development environment with hot-reload
+docker compose -f docker-compose.dev.yml up -d
+
+# View logs
+docker compose -f docker-compose.dev.yml logs -f
+
+# Stop development environment
+docker compose -f docker-compose.dev.yml down
+```
+
+The development setup includes:
+- Hot-reloading for code changes
+- Volume mounting for live code updates
+- Development-specific environment variables
+- PostgreSQL database with persistent volume
+- Swagger UI enabled at `/swagger`
 
 ## API Swagger
 

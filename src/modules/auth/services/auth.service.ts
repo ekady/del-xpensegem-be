@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios, { AxiosResponse } from 'axios';
@@ -17,10 +17,10 @@ import { TokenService } from './token.service';
 import {
   ContinueProviderRequestDto,
   ForgotPasswordDto,
-  ResetPasswordDto,
   SignInRequestDto,
   SignUpRequestDto,
   TokensDto,
+  UserDataDto,
 } from '../dto';
 
 @Injectable()
@@ -38,7 +38,14 @@ export class AuthService {
   async signIn(signInDto: SignInRequestDto): Promise<TokensDto> {
     const user = await this.userRepository.findOne({
       where: { email: signInDto.email },
-      select: { password: true, email: true, picture: true, id: true },
+      select: {
+        password: true,
+        email: true,
+        picture: true,
+        id: true,
+        firstName: true,
+        lastName: true,
+      },
     });
 
     const userHashedPassword = user ? user.password : '';
@@ -54,7 +61,16 @@ export class AuthService {
       email: user.email,
     });
 
-    return tokens;
+    return {
+      ...tokens,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        picture: user.picture,
+      },
+    };
   }
 
   async continueWithProvider(
@@ -67,7 +83,7 @@ export class AuthService {
     if (!userJwt?.email || !userJwt.given_name)
       throw new TokenInvalidException();
 
-    const user = await this.userRepository.findOne({
+    let user = await this.userRepository.findOne({
       where: { email: userJwt.email },
     });
 
@@ -89,7 +105,7 @@ export class AuthService {
         },
         { path: '/private/profile' },
       );
-      await this.userRepository.insert({
+      const insertResult = await this.userRepository.insert({
         email: userJwt.email,
         firstName: userJwt.given_name,
         lastName: userJwt.family_name,
@@ -103,26 +119,48 @@ export class AuthService {
         name: userJwt.given_name,
         url: this.config.get('URL_CLIENT'),
       });
+      // Re-assign user to the newly created user for token generation
+      user = {
+        id: insertResult.raw[0].id,
+        email: userJwt.email,
+      } as UserEntity;
     }
 
-    return this.tokenService.generateAuthTokens({
+    const tokens = await this.tokenService.generateAuthTokens({
       id: user.id,
       email: user.email,
     });
+
+    return {
+      ...tokens,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        picture: user.picture,
+      },
+    };
   }
 
-  async signUp(signUpDto: SignUpRequestDto): Promise<StatusMessageDto> {
-    const user = await this.userRepository.findOne({
+  async signUp(signUpDto: SignUpRequestDto): Promise<UserDataDto> {
+    const userExists = await this.userRepository.findOne({
       where: { email: signUpDto.email },
     });
-    if (user) throw new EmailUsernameExistException();
+    if (userExists) throw new EmailUsernameExistException();
 
-    await this.userRepository.insert({
-      ...signUpDto,
-      isViaProvider: false,
+    const user: UserDataDto = {
+      firstName: signUpDto.firstName,
+      lastName: signUpDto.lastName,
+      email: signUpDto.email,
       picture: `${this.config.get('GRAVATAR_URL')}/${HashHelper.hashCrypto(
         signUpDto.email,
       )}?s=300&d=identicon`,
+    };
+
+    const userCreated = await this.userRepository.insert({
+      ...signUpDto,
+      ...user,
     });
     await this.emailService.sendMail({
       to: signUpDto.email,
@@ -132,7 +170,10 @@ export class AuthService {
       url: this.config.get('URL_CLIENT'),
     });
 
-    return { message: 'Success' };
+    return {
+      id: userCreated?.identifiers[0]?.id,
+      ...user,
+    };
   }
 
   async signOut(userId: string): Promise<StatusMessageDto> {
@@ -168,10 +209,21 @@ export class AuthService {
       throw new TokenInvalidException();
     }
 
-    return this.tokenService.generateAuthTokens({
+    const tokens = await this.tokenService.generateAuthTokens({
       id: userId,
       email: user.email,
     });
+
+    return {
+      ...tokens,
+      user: {
+        id: userId,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        picture: user.picture,
+      },
+    };
   }
 
   async forgotPassword({
@@ -207,18 +259,37 @@ export class AuthService {
     return { message: 'Success' };
   }
 
-  async resetPassword(
-    token: string,
-    resetPasswordDto: ResetPasswordDto,
-  ): Promise<StatusMessageDto> {
-    const user = await this.tokenService.verifyResetPasswordToken(token);
-    if (!user) throw new TokenInvalidException();
-
+  async resetPassword(email: string, newPassword: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { email: email },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
     await this.userRepository.update(
       { id: user.id },
       {
-        password: resetPasswordDto.password,
-        passwordConfirm: resetPasswordDto.passwordConfirm,
+        password: newPassword,
+        passwordConfirm: newPassword,
+        passwordResetToken: null,
+        passwordResetExpires: null,
+        hashedRefreshToken: null,
+      },
+    );
+  }
+
+  async resetPasswordWithOtp(email: string, newPassword: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { email: email },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.userRepository.update(
+      { id: user.id },
+      {
+        password: newPassword,
+        passwordConfirm: newPassword,
         passwordResetToken: null,
         passwordResetExpires: null,
         hashedRefreshToken: null,
@@ -232,7 +303,5 @@ export class AuthService {
       templateName: 'success-reset-password',
       name: user.firstName,
     });
-
-    return { message: 'Success' };
   }
 }
