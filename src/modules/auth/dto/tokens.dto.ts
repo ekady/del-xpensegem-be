@@ -1,4 +1,5 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
+import { UserDataDto } from './user-data.dto';
 
 export class TokensDto {
   @ApiResponseProperty()
@@ -9,4 +10,7 @@ export class TokensDto {
 
   @ApiResponseProperty()
   tokenType: string;
+
+  @ApiResponseProperty()
+  user: UserDataDto;
 }

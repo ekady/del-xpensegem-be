@@ -3,10 +3,10 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
+  Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -52,7 +52,7 @@ export class CategoriesController {
     return this.categoriesService.findOne(jwtPayload.id, id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @ApiResProperty(BaseEntityDto, 200)
   update(
     @JwtPayloadReq() jwtPayload: IJwtPayload,

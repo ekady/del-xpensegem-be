@@ -16,4 +16,9 @@ export class CreateAccountDto {
   @IsString()
   @IsOptional()
   icon: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  color: string;
 }
