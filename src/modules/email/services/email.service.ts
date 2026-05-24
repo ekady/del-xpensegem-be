@@ -1,19 +1,20 @@
 import { join } from 'path';
 
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createTransport, Transporter } from 'nodemailer';
 import { renderFile } from 'pug';
 
-import { HttpErrorType } from '@/shared/http-exceptions/constants/http-error-type.constant';
-
 import { ISendEmail } from '../interfaces/send-email.interface';
+import { LoggerService } from '@/common/logger/services/logger.service';
 
 @Injectable()
 export class EmailService {
-  private transporter: Transporter;
+  private readonly transporter: Transporter;
+  private readonly logger: LoggerService;
 
-  constructor(private config: ConfigService) {
+  constructor(private config: ConfigService, logger: LoggerService) {
+    this.logger = logger;
     this.transporter = createTransport({
       host: this.config.get('EMAIL_HOST'),
       port: this.config.get('EMAIL_PORT'),
@@ -38,10 +39,7 @@ export class EmailService {
         html,
       });
     } catch (error) {
-      throw new InternalServerErrorException({
-        message: error?.message ?? 'Internal Server Error',
-        errorType: HttpErrorType[500],
-      });
+      this.logger.error('EmailService.sendMail ::', error?.message);
     }
   }
 }
