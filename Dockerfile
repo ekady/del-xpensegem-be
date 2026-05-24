@@ -1,7 +1,7 @@
-FROM node:20.19-slim AS base
+FROM node:20-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN npm install -g pnpm
 USER node
 WORKDIR /xpensegem
 COPY --chown=node:node package.json .
@@ -14,7 +14,7 @@ USER node
 ENV NODE_ENV=production
 RUN pnpm build
 
-FROM node:20.19.1-alpine AS production
+FROM node:20-alpine AS production
 USER node
 WORKDIR /xpensegem
 COPY --chown=node:node --from=build /xpensegem/node_modules ./node_modules
