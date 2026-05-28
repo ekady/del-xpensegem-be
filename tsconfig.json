@@ -5,8 +5,8 @@
     ]
   },
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "Node",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "declaration": true,
     "removeComments": true,
     "esModuleInterop": true,
