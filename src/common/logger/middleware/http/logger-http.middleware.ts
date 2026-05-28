@@ -2,7 +2,6 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
 import morgan from 'morgan';
-import { createStream } from 'rotating-file-stream';
 
 import {
   LOGGER_HTTP_FORMAT,
@@ -61,10 +60,11 @@ export class LoggerHttpWriteIntoFileMiddleware implements NestMiddleware {
     this.writeIntoFile =
       this.configService.get('LOGGER_HTTP_WRITE_INTO_FILE') === 'true';
     this.maxSize = this.configService.get('LOGGER_HTTP_MAX_SIZE');
-    this.maxFiles = parseInt(this.configService.get('LOGGER_HTTP_MAX_FILES'));
+    this.maxFiles = Number(this.configService.get('LOGGER_HTTP_MAX_FILES'));
   }
 
   private async httpLogger(): Promise<ILoggerHttpConfig> {
+    const { createStream } = await import('rotating-file-stream');
     const date: Date = new Date();
     const day = date.getDate();
     const month = date.getMonth() + 1;

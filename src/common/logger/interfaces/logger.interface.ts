@@ -1,5 +1,8 @@
 import { Response } from 'express';
-import { RotatingFileStream } from 'rotating-file-stream';
+
+type LoggerStream = {
+  write: (message: string) => void;
+};
 
 export interface ILoggerLog {
   description: string;
@@ -10,7 +13,7 @@ export interface ILoggerLog {
 }
 
 export interface ILoggerHttpConfigOptions {
-  readonly stream: RotatingFileStream;
+  readonly stream: LoggerStream;
   skip?: (req: any, res: any) => boolean;
 }
 
