@@ -37,7 +37,7 @@ export class AuthService {
 
   async signIn(signInDto: SignInRequestDto): Promise<TokensDto> {
     const user = await this.userRepository.findOne({
-      where: { email: signInDto.email },
+      where: { email: signInDto.email?.toLowerCase() },
       select: {
         password: true,
         email: true,
