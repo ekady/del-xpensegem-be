@@ -124,14 +124,10 @@ export class UserService {
       throw new BadRequestException('Passwords do not match');
     }
 
-    const hashedPassword = await HashHelper.encrypt(
-      updatePasswordDto.password,
-    );
-
     await this.userRepository.update(
       { id: userId },
       {
-        password: hashedPassword,
+        password: updatePasswordDto.password,
         passwordChangedAt: new Date(),
         passwordConfirm: null,
         hashedRefreshToken: null,
